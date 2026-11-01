@@ -238,6 +238,168 @@ footer{
 @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 .slip.enter{animation:rise .5s cubic-bezier(.2,.7,.3,1) both}
 </style>
+<style id="ux">
+/* ===== 增强层：阅读偏好 / 对照 / 检索 / 书签卡 / 年表 ===== */
+:root{ --fs-read:16.5px; --lh-read:2.05; }
+:root[data-skin="eye"]{
+  --paper:#DCE5D4; --paper-2:#D0DAC7; --paper-3:#C3D0B9;
+  --ink:#1B2318; --ink-2:#43503E; --ink-3:#6B7A63;
+  --rule:#A9B79F; --rule-2:#B6C3AC;
+  --zhu:#8E2F28; --wei:#7E6330; --wu:#2F5B57;
+  color-scheme:light;
+}
+
+.text p.m,.bai p{font-size:var(--fs-read);line-height:var(--lh-read)}
+.text p.n{font-size:calc(var(--fs-read) * .8);line-height:1.9}
+
+/* 竹简微动效 */
+.slip:hover,.slip:focus-visible{box-shadow:0 10px 18px rgba(0,0,0,.18)}
+
+/* 检索与筛选 */
+.nav-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:18px}
+.chip{
+  all:unset;cursor:pointer;font-family:var(--f-hei);font-size:12px;letter-spacing:.1em;
+  padding:6px 12px;border:1px solid var(--rule-2);color:var(--ink-2);
+}
+.chip:hover,.chip:focus-visible{color:var(--ink);border-color:var(--ink)}
+.chip:focus-visible{outline:2px solid var(--zhu);outline-offset:2px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.finder{position:relative;flex:1 1 260px;min-width:0;margin-left:4px}
+.finder input{
+  width:100%;padding:9px 13px;border:1px solid var(--rule-2);background:var(--paper-2);
+  color:var(--ink);font-family:var(--f-hei);font-size:13px;letter-spacing:.05em;
+}
+.finder input:focus{outline:2px solid var(--zhu);outline-offset:-1px}
+.find-out{
+  position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:40;max-height:52vh;overflow:auto;
+  background:var(--paper);border:1px solid var(--rule);box-shadow:0 18px 44px rgba(0,0,0,.25);
+}
+.find-out[hidden]{display:none}
+.find-hit{
+  all:unset;box-sizing:border-box;display:block;width:100%;cursor:pointer;
+  padding:10px 13px;border-bottom:1px solid var(--rule-2);
+  font-size:13px;line-height:1.7;color:var(--ink-2);
+}
+.find-hit:last-child{border-bottom:none}
+.find-hit:hover,.find-hit:focus-visible{background:var(--paper-3)}
+.find-hit b{display:block;font-family:var(--f-hei);font-size:12px;letter-spacing:.08em;color:var(--zhu);font-weight:400}
+.find-hit b em{margin-left:8px;font-style:normal;color:var(--ink-3);font-size:11px}
+.find-hit mark{background:var(--zhu);color:var(--paper);padding:0 1px}
+.find-empty{padding:14px 13px;font-family:var(--f-hei);font-size:12px;color:var(--ink-3)}
+
+/* 续读 */
+.resume{
+  position:fixed;left:max(16px,env(safe-area-inset-left,0px));
+  bottom:max(16px,env(safe-area-inset-bottom,0px));z-index:45;
+  display:flex;align-items:center;gap:10px;padding:10px 14px;border:none;cursor:pointer;
+  background:var(--ink);color:var(--paper);font-family:var(--f-hei);font-size:12px;letter-spacing:.06em;
+  box-shadow:0 12px 30px rgba(0,0,0,.28);
+}
+.resume span{opacity:.66}
+.resume[hidden]{display:none}
+.resume:hover{background:var(--zhu)}
+
+/* 阅读偏好 */
+.prefs{margin-left:auto;display:flex;align-items:center;position:relative}
+.prefs-btn{
+  all:unset;cursor:pointer;font-family:var(--f-hei);font-size:12px;letter-spacing:.1em;
+  color:var(--ink-3);padding:9px 10px 9px 14px;border-left:1px solid var(--rule);
+}
+.prefs-btn:hover,.prefs-btn:focus-visible{color:var(--zhu)}
+.prefs-btn:focus-visible{outline:2px solid var(--zhu);outline-offset:-2px}
+.prefs-pop{
+  position:absolute;top:calc(100% + 10px);right:0;z-index:60;width:238px;
+  background:var(--paper);border:1px solid var(--rule);
+  box-shadow:0 16px 40px rgba(0,0,0,.24);padding:14px 14px 8px;
+}
+.prefs-pop[hidden]{display:none}
+.prefs-pop h4{
+  margin:0 0 7px;font-family:var(--f-hei);font-size:11px;font-weight:400;
+  letter-spacing:.18em;color:var(--zhu);
+}
+.prefs-row{display:flex;gap:4px;margin-bottom:13px}
+.prefs-row button{
+  all:unset;cursor:pointer;flex:1 1 0;text-align:center;padding:6px 0;
+  border:1px solid var(--rule-2);font-family:var(--f-hei);font-size:12px;color:var(--ink-2);
+}
+.prefs-row button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.prefs-row button:focus-visible{outline:2px solid var(--zhu);outline-offset:-2px}
+
+/* 对照视图 */
+.sheet.split{width:min(1320px,100%)}
+.sheet-body.split{
+  display:grid;grid-template-columns:1fr 1fr;gap:0;overflow:hidden;padding:0;
+}
+.sheet-body.split .pane{overflow-y:auto;padding:22px 20px 28px;min-height:0}
+.sheet-body.split .pane + .pane{border-left:1px solid var(--rule)}
+.sheet-body.split .pane::before{
+  content:attr(data-label);display:block;margin-bottom:14px;
+  font-family:var(--f-hei);font-size:10.5px;letter-spacing:.2em;color:var(--zhu);
+}
+
+/* 裴注折叠 */
+.text.fold p.n{
+  max-height:3.6em;overflow:hidden;cursor:pointer;position:relative;
+  -webkit-mask-image:linear-gradient(180deg,#000 62%,transparent);
+  mask-image:linear-gradient(180deg,#000 62%,transparent);
+}
+.text.fold p.n.open{max-height:none;-webkit-mask-image:none;mask-image:none}
+
+/* 导读年表 */
+.tl{margin:0 0 24px;border-left:2px solid var(--rule);padding-left:0}
+.tl .row{
+  position:relative;display:grid;grid-template-columns:66px minmax(0,1fr);gap:12px;
+  padding:5px 0 5px 16px;font-size:14.5px;line-height:1.7;
+}
+.tl .row::before{
+  content:"";position:absolute;left:-5px;top:15px;width:8px;height:8px;
+  border-radius:50%;background:var(--zhu);
+}
+.tl b{font-family:var(--f-hei);font-size:12px;font-weight:400;color:var(--zhu);letter-spacing:.04em;padding-top:3px}
+
+/* 书签卡 */
+.quote-btn{
+  position:absolute;z-index:70;padding:7px 12px;border:none;cursor:pointer;
+  background:var(--zhu);color:var(--paper);font-family:var(--f-hei);font-size:12px;
+  letter-spacing:.1em;box-shadow:0 8px 20px rgba(0,0,0,.3);
+}
+.quote-btn[hidden]{display:none}
+.cardwrap{
+  position:fixed;inset:0;z-index:80;display:grid;place-items:center;gap:14px;
+  background:rgba(23,21,15,.62);padding:20px;
+}
+.cardwrap[hidden]{display:none}
+.cardwrap img{
+  max-width:min(400px,100%);max-height:72vh;box-shadow:0 26px 64px rgba(0,0,0,.45);
+  border:1px solid rgba(0,0,0,.2);
+}
+.cardbar{display:flex;gap:10px;justify-content:center}
+.cardbar button{
+  all:unset;cursor:pointer;padding:9px 20px;border:1px solid var(--paper);
+  font-family:var(--f-hei);font-size:12.5px;letter-spacing:.1em;color:var(--paper);
+}
+.cardbar button:hover,.cardbar button:focus-visible{background:var(--paper);color:var(--ink)}
+
+@media (max-width:900px){
+  .tab-split{display:none}
+  .sheet.split{width:min(860px,100%)}
+  .sheet-body.split{display:block;overflow-y:auto;padding:20px 16px 6px}
+  .sheet-body.split .pane{overflow:visible;padding:0}
+  .sheet-body.split .pane + .pane{border-left:none;border-top:1px solid var(--rule);margin-top:18px;padding-top:18px}
+  .prefs-pop{position:fixed;right:12px;left:12px;width:auto;top:auto;bottom:80px}
+}
+
+</style>
+<script id="ux-early">
+try{
+  var _p=JSON.parse(localStorage.getItem('sgz.ux.v1')||'{}');
+  var _r=document.documentElement, _fs=[15,16.5,18.5,21], _lh=[1.9,2.05,2.3];
+  if(_p.fs)_r.style.setProperty('--fs-read',_fs[_p.fs-1]+'px');
+  if(_p.lh)_r.style.setProperty('--lh-read',_lh[_p.lh-1]);
+  if(_p.skin==='mo')_r.setAttribute('data-theme','dark');
+  else if(_p.skin==='hu'){_r.setAttribute('data-skin','eye');_r.setAttribute('data-theme','light');}
+}catch(e){}
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -520,6 +682,346 @@ function syncFromHash() {
 }
 window.addEventListener('hashchange', syncFromHash);
 syncFromHash();
+</script>
+<script id="ux-js">
+/* ===== 增强层脚本 ===== */
+(function () {
+  'use strict';
+  var KEY = 'sgz.ux.v1', LAST = 'sgz.last';
+  var S = Object.assign({ fs: 2, lh: 2, skin: 'xuan', note: 'fold' }, read());
+  function read() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+
+  var FS = [15, 16.5, 18.5, 21], LH = [1.9, 2.05, 2.3];
+
+  function applyPrefs() {
+    var r = document.documentElement;
+    r.style.setProperty('--fs-read', FS[S.fs - 1] + 'px');
+    r.style.setProperty('--lh-read', LH[S.lh - 1]);
+    if (S.skin === 'mo') { r.setAttribute('data-theme', 'dark'); r.removeAttribute('data-skin'); }
+    else if (S.skin === 'hu') { r.setAttribute('data-skin', 'eye'); r.setAttribute('data-theme', 'light'); }
+    else { r.removeAttribute('data-skin'); r.removeAttribute('data-theme'); }
+    textBody.classList.toggle('fold', S.note === 'fold' && !hideNote);
+    syncPop();
+  }
+
+  /* ---------- 竹简筛选 + 全书检索 ---------- */
+  var railWrap = document.querySelector('.rail-wrap');
+  var tools = document.createElement('div');
+  tools.className = 'nav-tools';
+  tools.innerHTML =
+    '<button class="chip" data-k="" aria-pressed="true">全部 65</button>' +
+    '<button class="chip" data-k="魏" aria-pressed="false">魏书 30</button>' +
+    '<button class="chip" data-k="蜀" aria-pressed="false">蜀书 15</button>' +
+    '<button class="chip" data-k="吴" aria-pressed="false">吴书 20</button>' +
+    '<div class="finder"><input id="finderQ" type="search" placeholder="检索全书：荀彧 / 合肥 / 九锡（按 / 聚焦）" aria-label="检索全书" autocomplete="off">' +
+    '<div class="find-out" id="finderOut" hidden></div></div>';
+  railWrap.parentNode.insertBefore(tools, railWrap);
+
+  tools.addEventListener('click', function (e) {
+    var b = e.target.closest('.chip');
+    if (!b) return;
+    var k = b.dataset.k;
+    tools.querySelectorAll('.chip').forEach(function (c) { c.setAttribute('aria-pressed', String(c === b)); });
+    document.querySelectorAll('#rail .kingdom').forEach(function (g, i) {
+      var kk = ['魏', '蜀', '吴'][i];
+      g.style.display = (!k || kk === k) ? '' : 'none';
+    });
+    railWrap.scrollLeft = 0;
+  });
+
+  var q = document.getElementById('finderQ'), out = document.getElementById('finderOut');
+  var IDX = null, timer = 0;
+  function index() {
+    if (IDX) return IDX;
+    IDX = DATA.map(function (c) {
+      return {
+        c: c,
+        t: (c.bai || []).join('\n') + '\n' + c.paras.map(function (p) { return p.s; }).join('\n') +
+           '\n' + c.name + ' ' + c.keys
+      };
+    });
+    return IDX;
+  }
+  function esc2(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function hl(s, k) { return esc2(s).split(esc2(k)).join('<mark>' + esc2(k) + '</mark>'); }
+  function search(k) {
+    k = (k || '').trim();
+    if (!k) { out.hidden = true; out.innerHTML = ''; return; }
+    var hits = [];
+    index().forEach(function (it) {
+      var n = 0, i = it.t.indexOf(k), first = -1;
+      while (i >= 0) { if (first < 0) first = i; n++; i = it.t.indexOf(k, i + k.length); }
+      if (n) hits.push({ c: it.c, n: n, s: it.t.slice(Math.max(0, first - 24), first + k.length + 26) });
+    });
+    hits.sort(function (a, b) { return b.n - a.n; });
+    out.innerHTML = hits.length
+      ? hits.slice(0, 20).map(function (h) {
+          return '<button class="find-hit" data-id="' + h.c.id + '"><b>卷' + h.c.cn + '　' + esc2(h.c.name) +
+                 '<em>' + h.n + ' 处</em></b>…' + hl(h.s, k) + '…</button>';
+        }).join('')
+      : '<div class="find-empty">全书没有找到「' + esc2(k) + '」</div>';
+    out.hidden = false;
+  }
+  q.addEventListener('input', function () { clearTimeout(timer); timer = setTimeout(function () { search(q.value); }, 160); });
+  q.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { q.value = ''; search(''); q.blur(); }
+    if (e.key === 'Enter') { var f = out.querySelector('.find-hit'); if (f) { out.hidden = true; open(f.dataset.id, true); } }
+  });
+  out.addEventListener('click', function (e) {
+    var b = e.target.closest('.find-hit');
+    if (b) { out.hidden = true; open(b.dataset.id, true); }
+  });
+  document.addEventListener('click', function (e) {
+    if (!tools.contains(e.target)) out.hidden = true;
+  });
+
+  /* ---------- 对照视图 ---------- */
+  var tabSplit = document.createElement('button');
+  tabSplit.className = 'tab tab-split';
+  tabSplit.id = 'tabSplit';
+  tabSplit.textContent = '对照';
+  tabSplit.setAttribute('role', 'tab');
+  tabGuide.after(tabSplit);
+  paneText.dataset.label = '原文 · 裴注';
+  paneBai.dataset.label = '白话';
+
+  var _showTab = showTab;
+  showTab = function (v) {
+    if (v === 'split') {
+      sheetBody.classList.add('split');
+      [tabBai, tabText, tabGuide, tabSplit].forEach(function (t) { t.setAttribute('aria-selected', String(t === tabSplit)); });
+      paneText.hidden = false; paneBai.hidden = false; paneGuide.hidden = true;
+      sheetBody.scrollTop = 0;
+      return;
+    }
+    sheetBody.classList.remove('split');
+    tabSplit.setAttribute('aria-selected', 'false');
+    _showTab(v);
+  };
+  tabSplit.addEventListener('click', function () { showTab('split'); });
+
+  /* ---------- 阅读偏好面板 ---------- */
+  var prefs = document.createElement('div');
+  prefs.className = 'prefs';
+  prefs.innerHTML = '<button class="prefs-btn" id="prefsBtn" aria-expanded="false" aria-controls="prefsPop">Aa 排版</button>';
+  var pop = document.createElement('div');
+  pop.className = 'prefs-pop';
+  pop.id = 'prefsPop';
+  pop.hidden = true;
+  pop.innerHTML =
+    '<h4>字号</h4><div class="prefs-row" data-k="fs">' +
+      '<button data-v="1">小</button><button data-v="2">中</button><button data-v="3">大</button><button data-v="4">特大</button></div>' +
+    '<h4>行距</h4><div class="prefs-row" data-k="lh">' +
+      '<button data-v="1">紧凑</button><button data-v="2">标准</button><button data-v="3">宽松</button></div>' +
+    '<h4>底色</h4><div class="prefs-row" data-k="skin">' +
+      '<button data-v="xuan">宣纸</button><button data-v="mo">墨黑</button><button data-v="hu">护眼</button></div>' +
+    '<h4>裴注</h4><div class="prefs-row" data-k="note">' +
+      '<button data-v="fold">折叠</button><button data-v="full">全显</button></div>';
+  prefs.appendChild(pop);
+  document.querySelector('.tabs').appendChild(prefs);
+
+  function syncPop() {
+    pop.querySelectorAll('.prefs-row').forEach(function (row) {
+      var k = row.dataset.k;
+      row.querySelectorAll('button').forEach(function (b) {
+        b.setAttribute('aria-pressed', String(String(S[k]) === b.dataset.v));
+      });
+    });
+  }
+  document.getElementById('prefsBtn').addEventListener('click', function (e) {
+    e.stopPropagation();
+    pop.hidden = !pop.hidden;
+    this.setAttribute('aria-expanded', String(!pop.hidden));
+  });
+  pop.addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-v]');
+    if (!b) return;
+    var k = b.parentNode.dataset.k, v = b.dataset.v;
+    S[k] = (k === 'skin' || k === 'note') ? v : Number(v);
+    save(); applyPrefs();
+  });
+  document.addEventListener('click', function (e) {
+    if (!prefs.contains(e.target)) { pop.hidden = true; document.getElementById('prefsBtn').setAttribute('aria-expanded', 'false'); }
+  });
+
+  /* ---------- 裴注折叠 ---------- */
+  textBody.addEventListener('click', function (e) {
+    var p = e.target.closest('p.n');
+    if (p && textBody.classList.contains('fold')) p.classList.toggle('open');
+  });
+
+  /* ---------- 人物年表 ---------- */
+  var TL = {
+    ch001: [[155, '生于谯'], [184, '黄巾起，为骑都尉'], [196, '迎献帝都许'], [200, '官渡破袁绍'], [207, '北征乌丸，辽东授首'], [208, '赤壁败归'], [211, '平关右'], [213, '为魏公，加九锡'], [216, '进爵魏王'], [220, '卒于洛阳']],
+    ch032: [[161, '生于涿郡'], [201, '依刘表，屯新野'], [208, '当阳之败，联孙破曹'], [214, '取益州'], [219, '为汉中王'], [221, '即帝位'], [222, '夷陵败绩'], [223, '卒于永安']],
+    ch035: [[207, '三顾而出'], [208, '使吴，定联盟'], [214, '定成都，为股肱'], [221, '拜丞相'], [225, '南征四郡'], [228, '街亭之败，自贬三等'], [234, '卒于五丈原']],
+    ch044: [[228, '降蜀，诸葛亮辟为仓曹掾'], [234, '亮卒，还成都'], [253, '迁大将军'], [262, '出侯和，为邓艾所破'], [263, '剑阁拒钟会，降'], [264, '死于成都之乱']],
+    ch047: [[200, '统事，年十九'], [208, '赤壁破曹'], [219, '袭取荆州'], [222, '夷陵破刘备'], [229, '称帝于武昌，迁建业'], [241, '太子孙登卒'], [250, '废太子和'], [252, '卒，年七十一']],
+    ch054: [[195, '与孙策定交'], [200, '赴丧留吴，与张昭共掌事'], [208, '赤壁破曹'], [209, '取南郡'], [210, '议取蜀，道卒']],
+    ch058: [[219, '白衣渡江，定荆州'], [222, '夷陵破刘备'], [228, '石亭破曹休'], [244, '为丞相'], [245, '议嫡庶，愤恚卒']]
+  };
+  function timeline(c) {
+    var rows = TL[c.id];
+    if (!rows) return '';
+    return '<div class="tl">' + rows.map(function (r) {
+      return '<div class="row"><b>' + r[0] + '</b><span>' + esc2(r[1]) + '</span></div>';
+    }).join('') + '</div>';
+  }
+
+  /* ---------- 打开后处理 ---------- */
+  function afterOpen(c) {
+    if (!c) return;
+    if (!paneGuide.querySelector('.tl')) paneGuide.insertAdjacentHTML('afterbegin', timeline(c));
+    textBody.classList.toggle('fold', S.note === 'fold' && !hideNote);
+    try { localStorage.setItem(LAST, c.id); } catch (e) {}
+    var r = document.getElementById('resume');
+    if (r) r.hidden = true;
+  }
+  var _open = open;
+  open = function (id, push) {
+    _open(id, push);
+    afterOpen(byId[id]);
+  };
+  // 首屏通过 hash 直接进卷时，上面的包装还没装好，这里补一次
+  if (typeof current !== 'undefined' && current) afterOpen(current);
+
+  /* ---------- 续读 ---------- */
+  var resume = document.createElement('button');
+  resume.className = 'resume';
+  resume.id = 'resume';
+  resume.hidden = true;
+  document.body.appendChild(resume);
+  var last = null;
+  try { last = localStorage.getItem(LAST); } catch (e) {}
+  if (last && byId[last] && !location.hash) {
+    var lc = byId[last];
+    resume.innerHTML = '<span>继续阅读</span>卷' + lc.cn + '　' + esc2(lc.name);
+    resume.hidden = false;
+    resume.addEventListener('click', function () { open(last, true); });
+  }
+
+  /* ---------- 划词生成书签卡 ---------- */
+  var qb = document.createElement('button');
+  qb.className = 'quote-btn';
+  qb.textContent = '生成书签';
+  qb.hidden = true;
+  document.body.appendChild(qb);
+  var selText = '', selRect = null;
+
+  function clearQuote() { qb.hidden = true; selText = ''; }
+  document.addEventListener('mouseup', function (e) {
+    if (!reader.contains(e.target) || e.target === qb) return;
+    setTimeout(function () {
+      var s = window.getSelection();
+      var t = s ? s.toString().trim() : '';
+      if (!t || t.length < 4 || t.length > 220 || !s.rangeCount) { clearQuote(); return; }
+      var node = s.anchorNode;
+      if (!node || !reader.contains(node)) { clearQuote(); return; }
+      selText = t; selRect = s.getRangeAt(0).getBoundingClientRect();
+      qb.hidden = false;
+      qb.style.left = Math.max(12, selRect.left) + 'px';
+      qb.style.top = (selRect.bottom + window.scrollY + 8) + 'px';
+    }, 10);
+  });
+  document.addEventListener('selectionchange', function () {
+    var s = window.getSelection();
+    if (!s || !s.toString().trim()) clearQuote();
+  });
+
+  var cardwrap = document.createElement('div');
+  cardwrap.className = 'cardwrap';
+  cardwrap.hidden = true;
+  cardwrap.innerHTML = '<img alt="书签卡预览"><div class="cardbar"><button data-a="dl">下载 PNG</button><button data-a="close">关闭</button></div>';
+  document.body.appendChild(cardwrap);
+
+  function makeCard(text, c) {
+    var W = 1080, H = 1350, cv = document.createElement('canvas');
+    cv.width = W; cv.height = H;
+    var g = cv.getContext('2d');
+    g.fillStyle = '#D5D2C6'; g.fillRect(0, 0, W, H);
+    g.strokeStyle = '#9E2B25'; g.lineWidth = 3; g.strokeRect(48, 48, W - 96, H - 96);
+    g.strokeStyle = '#ADA695'; g.lineWidth = 1; g.strokeRect(66, 66, W - 132, H - 132);
+
+    g.fillStyle = '#9E2B25';
+    g.fillRect(W - 148, 88, 60, 150);
+    g.fillStyle = '#D5D2C6';
+    g.font = '30px "Songti SC","SimSun",serif';
+    g.textAlign = 'center';
+    g.fillText('卷' + c.cn, W - 118, 148);
+    g.fillText('三', W - 118, 196);
+
+    g.textAlign = 'left';
+    g.fillStyle = '#6E6857';
+    g.font = '24px "PingFang SC","Microsoft YaHei",sans-serif';
+    g.fillText('三国志　卷' + c.cn + '　' + c.name, 104, 132);
+
+    g.fillStyle = '#17150F';
+    g.font = '44px "Songti SC","STSong","SimSun",serif';
+    var max = W - 208, line = '', y = 300, lines = [];
+    for (var i = 0; i < text.length; i++) {
+      var ch = text[i];
+      if (ch === '\n' || g.measureText(line + ch).width > max) { lines.push(line); line = ch === '\n' ? '' : ch; }
+      else line += ch;
+    }
+    if (line) lines.push(line);
+    lines.slice(0, 14).forEach(function (l) {
+      g.fillText(l, 104, y); y += 74;
+    });
+
+    g.fillStyle = '#6E6857';
+    g.font = '24px "PingFang SC","Microsoft YaHei",sans-serif';
+    g.fillText('陈寿《三国志》', 104, H - 132);
+    g.fillStyle = '#ADA695';
+    g.fillRect(104, H - 108, W - 208, 1);
+    return cv;
+  }
+
+  qb.addEventListener('mousedown', function (e) { e.preventDefault(); });
+  qb.addEventListener('click', function () {
+    if (!selText || !current) return;
+    var cv = makeCard(selText, current);
+    var img = cardwrap.querySelector('img');
+    img.src = cv.toDataURL('image/png');
+    img.dataset.name = '三国志-卷' + current.cn + '.png';
+    cardwrap.hidden = false;
+    qb.hidden = true;
+  });
+  cardwrap.addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (!b && e.target.tagName !== 'IMG' && e.target !== cardwrap) return;
+    if (e.target === cardwrap) { cardwrap.hidden = true; return; }
+    if (!b) return;
+    if (b.dataset.a === 'close') { cardwrap.hidden = true; return; }
+    var img = cardwrap.querySelector('img');
+    var a = document.createElement('a');
+    a.href = img.src; a.download = img.dataset.name || '三国志.png';
+    document.body.appendChild(a); a.click(); a.remove();
+  });
+
+  /* ---------- 快捷键 ---------- */
+  document.addEventListener('keydown', function (e) {
+    var t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return;
+    if (e.key === '/' && reader.hidden) { e.preventDefault(); q.focus(); return; }
+    if (reader.hidden) return;
+    if (e.key === '1') showTab('bai');
+    else if (e.key === '2') showTab('text');
+    else if (e.key === '3') showTab('guide');
+    else if (e.key === '4' && window.innerWidth > 900) showTab('split');
+  });
+
+  /* ---------- 裴注开关与偏好联动 ---------- */
+  noteBtn.addEventListener('click', function () {
+    S.note = hideNote ? 'full' : 'fold';
+    save();
+    textBody.classList.toggle('fold', S.note === 'fold' && !hideNote);
+    syncPop();
+  });
+
+  applyPrefs();
+})();
+
 </script>
 </body>
 </html>
